@@ -7,7 +7,7 @@ import org.junit.jupiter.api.Test;
 class PalindromeTest {
 
 	Palindrome testPalindrome = new Palindrome();
-	String word = "aba";
+	String word = "aa";
 
 	@Test
 	void testLoadWords() {

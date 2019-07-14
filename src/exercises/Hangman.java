@@ -123,7 +123,7 @@ public class Hangman extends KeyAdapter {
 		for (int i = 0; i < puzzle.length(); i++) {
 			JLabel textField = new JLabel("_");
 			textField.setFont(new Font("Calibri", Font.BOLD, 80));
-			textField.setSize(5000, 5000);
+			textField.setSize(1000, 200);
 			boxes.add(textField);
 			panel.add(textField);
 		}
