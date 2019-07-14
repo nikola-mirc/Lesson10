@@ -5,12 +5,10 @@ import java.awt.Font;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.io.File;
-import java.nio.Buffer;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 import java.util.Stack;
-import java.util.logging.FileHandler;
 
 import javax.sound.sampled.AudioInputStream;
 import javax.sound.sampled.AudioSystem;
@@ -37,6 +35,7 @@ public class Hangman extends KeyAdapter {
 		hangman.addPuzzles();
 		hangman.createUI();
 	}
+
 	private void addPuzzles() {
 		puzzles.push(wordList.get(r.nextInt(wordList.size())).toString());
 	}
@@ -49,7 +48,7 @@ public class Hangman extends KeyAdapter {
 		JFrame frame = new JFrame("June's Hangman");
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		panel.add(livesLabel);
-		panel.setPreferredSize(new Dimension(800, 100));
+		panel.setPreferredSize(new Dimension(1000, 120));
 		loadNextPuzzle();
 		frame.add(panel);
 		frame.setLocationRelativeTo(null);
@@ -62,11 +61,9 @@ public class Hangman extends KeyAdapter {
 		removeBoxes();
 		lives = 9;
 		livesLabel.setFont(new Font("Calibri", Font.BOLD, 80));
-		livesLabel.setHorizontalTextPosition(SwingConstants.CENTER);
-		livesLabel.setVerticalTextPosition(SwingConstants.CENTER);
 		livesLabel.setText("" + lives);
 		addPuzzles();
-		puzzle = puzzles.pop();
+		puzzle = puzzles.pop().toLowerCase();
 		buffer.setLength(puzzle.length());
 		System.out.println("puzzle is now " + puzzle);
 		createBoxes();
@@ -74,15 +71,39 @@ public class Hangman extends KeyAdapter {
 
 	public void keyTyped(KeyEvent arg0) {
 		System.out.println(arg0.getKeyChar());
-		updateBoxesWithUserInput(arg0.getKeyChar());
-		if (lives == 0) {
-			playDeathKnell();
+		try {
+			checkChar(arg0.getKeyChar());
+			updateBoxesWithUserInput(arg0.getKeyChar());
+			if (lives == 0) {
+				playDeathKnell();
+				loadNextPuzzle();
+			}
+		} catch (Exception e) {
+			System.out.println("Invalid character. Starting a new game...");
 			loadNextPuzzle();
 		}
+		
+	}
+
+	private boolean checkChar(char keyChar) throws Exception {
+		boolean hasSpecial = false;
+		String specialChars = "/*!@#$%^&*()\"{}_[]|\\?/<>,.'";
+		if (specialChars.contains(String.valueOf(keyChar))) {
+			hasSpecial = true;
+			throw new Exception("Special character entered by the user.");
+			
+		}
+		return hasSpecial;
+	}
+
+	private char toLowerCase(char keyChar) {
+		keyChar = Character.toLowerCase(keyChar);
+		return keyChar;
 	}
 
 	private void updateBoxesWithUserInput(char keyChar) {
 		boolean gotOne = false;
+		keyChar = toLowerCase(keyChar);
 		for (int i = 0; i < puzzle.length(); i++) {
 			if (puzzle.charAt(i) == keyChar) {
 				boxes.get(i).setText("" + keyChar);
@@ -102,6 +123,7 @@ public class Hangman extends KeyAdapter {
 		for (int i = 0; i < puzzle.length(); i++) {
 			JLabel textField = new JLabel("_");
 			textField.setFont(new Font("Calibri", Font.BOLD, 80));
+			textField.setSize(5000, 5000);
 			boxes.add(textField);
 			panel.add(textField);
 		}
